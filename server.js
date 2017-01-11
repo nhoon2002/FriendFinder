@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var path = require('path');
 
 
-var PORT = 3000;
+var port = process.env.PORT || 3000;
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,5 +20,5 @@ require("./app/routing/html-routes.js")(app);
 
 ////////////////////////////
 app.listen(PORT, function() {
-   console.log('Hi. App is listening on PORT: ' + PORT);
+   console.log('Hi. App is listening on PORT: ' + port);
 });
