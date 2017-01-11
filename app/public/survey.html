@@ -48,7 +48,7 @@
 		<h4>In general, are you an early bird of a night owl?</h4>
 	 	<select data-placeholder="" class="chosen-select" id="q2">
 	 		<option value=""></option>
-            <option value="1">1 (Early Bird Disagree)</option>
+            <option value="1">1 (Early Bird)</option>
             <option value="2">2</option>
             <option value="3">3 (Average)</option>
             <option value="4">4</option>
@@ -172,11 +172,11 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal">&times;</button>
-	        <h2 class="modal-title"><strong>Best Match</strong></h2>
+	        <h2 class="modal-title" style="text-align: center;"><strong>Best Match</strong></h2>
 	      </div>
-	      <div class="modal-body">
-	        <h2 id="matchName"></h2>
-	        <img id="matchImg" src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg" alt="">
+	      <div class="modal-body" style="text-align: center">
+	        <h2 id="matchName" style="text-align: center;"></h2>
+	        <img id="matchImg" src="" alt="" width="500px">
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -226,7 +226,7 @@
 	    	var userData = {
 	    		name: $("#name").val(),
 	    		photo: $("#photo").val(),
-	    		scores: [$("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val(), ]
+	    		scores: [$("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val()]
 	    	}
 
 
@@ -236,14 +236,46 @@
 	    	// AJAX post the data to the friends API.
 	    	$.post(currentURL + "/api/friends", userData, function(data){
 
-	    		// Grab the result from the AJAX post so that the best match's name and photo are displayed.
-	    		$("#matchName").text(data.name);
-	    		$('#matchImg').attr("src", data.photo);
 
-		    	// Show the modal with the best match
-		    	$("#resultsModal").modal('toggle');
+
+
+					// $("#matchName").text(data.name);
+					// $('#matchImg').attr("src", data.photo);
+					//
+	    		// // Grab the result from the AJAX post so that the best match's name and photo are displayed.
+					//
+		    	// // Show the modal with the best match
 
 	    	});
+
+				$.get(currentURL + "/api/friends", userData, function(friendsData) {
+					console.log(friendsData);
+					var totalDifference = 40;
+					var localDifference = 0;
+					var topMatch;
+					var topMatches = false;
+
+					for (var i = 0; i < friendsData.length - 1; i++) { //Last entry of friendsData is the current user's info
+
+					localDifference = 0;
+						for (var j = 0; j < 10; j++) {
+							localDifference += Math.abs(parseInt(friendsData[i].scores[j]) - parseInt(userData.scores[j]))
+
+						}
+
+						console.log("Difference between" + userData.name + "and " + friendsData[i].name + "= " + localDifference)
+						if (localDifference < totalDifference) {
+							totalDifference = localDifference;
+							topMatch = friendsData[i];
+						}
+					}
+
+					// After running algorithm to find best match...
+					console.log(totalDifference);
+					$("#matchName").text(topMatch.name);
+					$('#matchImg').attr("src", topMatch.photo);
+					$("#resultsModal").modal('toggle');
+				})
 		}
 		else
 		{
